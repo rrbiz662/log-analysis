@@ -11,22 +11,32 @@ def get_top_articles(cur, order, limit):
         cur(object): The cursor to execute the query.
         order(str): The order to view the rows in.
         limit(int): The number of rows to view.
+
+    Return:
+        bool: True if success, False otherwise.
     """
-    cur.execute(
-                "SELECT articles.title, COUNT(*) as views"
-                " FROM log, articles"
-                " WHERE log.path LIKE '%'||articles.slug AND"
-                " log.method = 'GET'"
-                " GROUP BY articles.title"
-                " ORDER BY views {}"
-                " LIMIT {};".format(order, limit))
+    rows = None
+    try:
+        cur.execute(
+                    "SELECT articles.title, COUNT(*) as views"
+                    " FROM log, articles"
+                    " WHERE log.path LIKE '%'||articles.slug AND"
+                    " log.method = 'GET'"
+                    " GROUP BY articles.title"
+                    " ORDER BY views {}"
+                    " LIMIT {};".format(order, limit))
 
-    rows = cur.fetchall()
-    file = open("top_articles_report.txt", "w")
-    for row in rows:
-        file.write("\"{}\" - {} views \n".format(row[0], row[1]))
+        rows = cur.fetchall()
+    except psycopg2.Error:
+        return False
+    # Write data to txt file.
+    if rows is not None:
+        file = open("top_articles_report.txt", "w")
+        for row in rows:
+            file.write("\"{}\" - {} views \n".format(row[0], row[1]))
+        file.close()
 
-    file.close()
+        return True
 
 
 def get_top_authors(cur, order):
@@ -35,22 +45,32 @@ def get_top_authors(cur, order):
     Args:
         cur(object): The cursor to execute the query.
         order(str): The order to view the rows in.
+
+    Return:
+        bool: True if success, False otherwise.
     """
-    cur.execute(
-                "SELECT authors.name, COUNT(*) as views"
-                " FROM authors, articles, log"
-                " WHERE authors.id = articles.author AND"
-                " log.path LIKE '%'||articles.slug AND"
-                " log.method = 'GET'"
-                " GROUP BY authors.name"
-                " ORDER BY views {}".format(order))
+    rows = None
+    try:
+        cur.execute(
+                    "SELECT authors.name, COUNT(*) as views"
+                    " FROM authors, articles, log"
+                    " WHERE authors.id = articles.author AND"
+                    " log.path LIKE '%'||articles.slug AND"
+                    " log.method = 'GET'"
+                    " GROUP BY authors.name"
+                    " ORDER BY views {}".format(order))
 
-    rows = cur.fetchall()
-    file = open("top_authors_report.txt", "w")
-    for row in rows:
-        file.write("{} - {} views \n".format(row[0], row[1]))
+        rows = cur.fetchall()
+    except psycopg2.Error:
+        return False
+    # Write data to txt file.
+    if rows is not None:
+        file = open("top_authors_report.txt", "w")
+        for row in rows:
+            file.write("{} - {} views \n".format(row[0], row[1]))
+        file.close()
 
-    file.close()
+        return True
 
 
 def get_error_days(cur, error_percent):
@@ -62,22 +82,33 @@ def get_error_days(cur, error_percent):
     Args:
         cur(object): The cursor to execute the query.
         error_percent(int): The percentage of requests that led to errors.
+
+    Return:
+        bool: True if success, False otherwise.
     """
-    cur.execute(
-                "SELECT to_char(log_errors.date, 'Mon DD YYYY'),"
-                " round((log_errors.errors * 100"
-                " / log_requests.total::numeric), 2) as percent"
-                " FROM log_errors, log_requests"
-                " WHERE log_errors.date = log_requests.date AND"
-                " log_errors.errors * 100 / log_requests.total::numeric > {}"
-                " ORDER BY log_errors.date".format(error_percent))
+    rows = None
+    try:
+        cur.execute(
+                    "SELECT to_char(log_errors.date, 'Mon DD YYYY'),"
+                    " round((log_errors.errors * 100"
+                    " / log_requests.total::numeric), 2) as percent"
+                    " FROM log_errors, log_requests"
+                    " WHERE log_errors.date = log_requests.date AND"
+                    " log_errors.errors * 100"
+                    " / log_requests.total::numeric > {}"
+                    " ORDER BY log_errors.date".format(error_percent))
 
-    rows = cur.fetchall()
-    file = open("error_report.txt", "w")
-    for row in rows:
-        file.write("{} - {}% errors \n".format(row[0], row[1]))
+        rows = cur.fetchall()
+    except psycopg2.Error:
+        return False
+    # Write data to txt file.
+    if rows is not None:
+        file = open("error_report.txt", "w")
+        for row in rows:
+            file.write("{} - {}% errors \n".format(row[0], row[1]))
+        file.close()
 
-    file.close()
+        return True
 
 
 def setup_connection(db_name):
@@ -104,10 +135,23 @@ def main():
 
     if conn is not None:
         cur = conn.cursor()
-        get_top_articles(cur, "DESC", 3)
-        get_top_authors(cur, "DESC")
-        get_error_days(cur, 1)
+
+        # Create top articles report.
+        if get_top_articles(cur, "DESC", 3):
+            print("Successful creating top articles report.")
+        else:
+            print("Error creating top articles report.")
+        # Create top authors report.
+        if get_top_authors(cur, "DESC"):
+            print("Successful creating top authors report.")
+        else:
+            print("Error creating top authors report.")
+        # Create error report.
+        if get_error_days(cur, 1):
+            print("Successful creating daily error percentage report.")
+        else:
+            print("Error creating daily error percentage report.")
+
         conn.close()
-        print("Successful creating reports.")
 
 main()
