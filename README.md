@@ -21,9 +21,9 @@ In order for the python script to run correctly, two views need to be created on
 5) Navigate to the directory in the VM where the `newsdata.sql` file is located using the command `cd`.
 6) Load the data into `news` database using the command `psql -d news -f newsdata.sql`.
 7) Connect to the `news` database using the command `psql -d news`.
-7) Create first view using the command `CREATE VIEW log_requests AS SELECT log.time::date as date, COUNT(*) as total FROM log GROUP BY log.time::date ORDER BY log.time::date;`.
-8) Create second view using command `CREATE VIEW log_errors AS SELECT log.time::date as date, COUNT(*) as errors FROM log WHERE log.status != '200 OK' GROUP BY log.time::date  ORDER BY log.time::date;`.
-9) Disconnect from the database using the command `\q`.
+8) Create first view using the command `CREATE VIEW log_requests AS SELECT log.time::date as date, COUNT(*) as total FROM log GROUP BY log.time::date ORDER BY log.time::date;`.
+9) Create second view using command `CREATE VIEW log_errors AS SELECT log.time::date as date, COUNT(*) as errors FROM log WHERE log.status != '200 OK' GROUP BY log.time::date  ORDER BY log.time::date;`.
+10) Disconnect from the database using the command `\q`.
 
 ## Run the Project
 In order to run the project:
