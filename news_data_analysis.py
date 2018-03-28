@@ -48,12 +48,12 @@ def get_top_authors(cur, order):
         True if success, False otherwise.
     """
     query = '''SELECT authors.name, COUNT(*) as views
-        FROM authors, articles, log
-        WHERE authors.id = articles.author AND
-        log.path LIKE '%'||articles.slug AND
-        log.method = 'GET'
-        GROUP BY authors.name
-        ORDER BY views {}'''.format(order)
+            FROM authors, articles, log
+            WHERE authors.id = articles.author AND
+            log.path LIKE '%'||articles.slug AND
+            log.method = 'GET'
+            GROUP BY authors.name
+            ORDER BY views {}'''.format(order)
     rows = get_data(cur, query)
 
     # Write data to txt file.
@@ -82,13 +82,13 @@ def get_error_days(cur, error_percent):
         True if success, False otherwise.
     """
     query = '''SELECT to_char(log_errors.date, 'Mon DD YYYY'),
-    round((log_errors.errors * 100
-    / log_requests.total::numeric), 2) as percent
-    FROM log_errors, log_requests
-    WHERE log_errors.date = log_requests.date AND
-    log_errors.errors * 100
-    / log_requests.total::numeric > {}
-    ORDER BY log_errors.date'''.format(error_percent)
+            round((log_errors.errors * 100
+            / log_requests.total::numeric), 2) as percent
+            FROM log_errors, log_requests
+            WHERE log_errors.date = log_requests.date AND
+            log_errors.errors * 100
+            / log_requests.total::numeric > {}
+            ORDER BY log_errors.date'''.format(error_percent)
     rows = get_data(cur, query)
 
     # Write data to txt file.
