@@ -1,2 +1,0 @@
-CREATE VIEW log_requests AS SELECT log.time::date as date, COUNT(*) as total FROM log GROUP BY log.time::date ORDER BY log.time::date;
-CREATE VIEW log_errors AS SELECT log.time::date as date, COUNT(*) as errors FROM log WHERE log.status != '200 OK' GROUP BY log.time::date  ORDER BY log.time::date;
