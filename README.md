@@ -1,11 +1,13 @@
 # log-analysis-project
-Source code for Log Analysis Project.
+This project uses the `pyscopg2` library to query a mock PostgreSQL database for information on fictional news articles. 
+The queries provide data on the top articles, top authors, and daily requests error percentage.
 
 ## Getting Started
 These instructions will get you a copy of the project on your local machine for development and/or testing purposes.
 
 ### Prerequisites
-To use the `VirtualBox` virtual machine (VM) the user will require `VirtualBox 5.1.34` or higher and `Vagrant 1.9.2` or higher . 
+To use the `VirtualBox` virtual machine (VM) the user will require [VirtualBox 5.1.34](https://www.virtualbox.org/wiki/Downloads)
+or higher and [Vagrant 1.9.2](https://www.vagrantup.com/downloads.html) or higher . 
 
 To run the python script the user will require `Python 3.6.4` or higher.
 
@@ -21,8 +23,14 @@ In order for the python script to run correctly, two views need to be created on
 5) Navigate to the directory in the VM where the `newsdata.sql` file is located using the command `cd`.
 6) Load the data into `news` database using the command `psql -d news -f newsdata.sql`.
 7) Connect to the `news` database using the command `psql -d news`.
-8) Create first view using the command `CREATE VIEW log_requests AS SELECT log.time::date as date, COUNT(*) as total FROM log GROUP BY log.time::date ORDER BY log.time::date;`.
-9) Create second view using command `CREATE VIEW log_errors AS SELECT log.time::date as date, COUNT(*) as errors FROM log WHERE log.status != '200 OK' GROUP BY log.time::date  ORDER BY log.time::date;`.
+8) Create first view using the command: 
+```sql
+CREATE VIEW log_requests AS SELECT log.time::date as date, COUNT(*) as total FROM log GROUP BY log.time::date ORDER BY log.time::date;
+```
+9) Create second view using command
+```sql
+CREATE VIEW log_errors AS SELECT log.time::date as date, COUNT(*) as errors FROM log WHERE log.status != '200 OK' GROUP BY log.time::date  ORDER BY log.time::date;
+```
 10) Disconnect from the database using the command `\q`.
 
 ## Run the Project
