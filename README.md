@@ -16,7 +16,7 @@ To get a copy of the project to work on locally, the user can either `download t
 
 ### Initial Setup
 In order for the python script to run correctly, two views need to be created on the `news` database. To create these views:
-1) Open GIT Bash terminal.
+1) Open Terminal/Powershell.
 2) Using the `cd` command, navigate to the directory where the project is located.
 3) Start the VM by using the `vagrant up` command.
 4) Connect to the VM using the `vagrant ssh` command.
@@ -35,7 +35,7 @@ CREATE VIEW log_errors AS SELECT log.time::date as date, COUNT(*) as errors FROM
 
 ## Run the Project
 In order to run the project:
-1) Open GIT Bash terminal.
+1) Open Terminal/Powershell.
 2) Using the `cd` command, navigate to the directory where the project is located.
 3) Start the VM by using the command `vagrant up`.
 4) Connect to the VM using the command `vagrant ssh`.
