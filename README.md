@@ -1,4 +1,4 @@
-# log-analysis-project
+# log-analysis
 This project uses the `pyscopg2` library to query a mock PostgreSQL database for information on fictional news articles. 
 The queries provide data on the top articles, top authors, and daily requests error percentage.
 
